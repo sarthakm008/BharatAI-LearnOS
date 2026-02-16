@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>BharatAI LearnOS</h2>
+
+<textarea id="q" rows="5" cols="50"></textarea>
+<br>
+<button onclick="ask()">Explain</button>
+
+<p id="a"></p>
+
+<script>
+async function ask() {
+  const q = document.getElementById("q").value;
+
+  const res = await fetch("/ask", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question: q })
+  });
+
+  const data = await res.json();
+  document.getElementById("a").innerText = data.answer;
+}
+</script>
+
+</body>
+</html>
