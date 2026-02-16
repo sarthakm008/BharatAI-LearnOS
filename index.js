@@ -1,11 +1,13 @@
 import express from "express";
+import path from "path";
 
 const app = express();
+
 app.use(express.json());
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
-  res.sendFile(process.cwd() + "/public/index.html");
+  res.sendFile(path.resolve("public/index.html"));
 });
 
 app.post("/ask", async (req, res) => {
@@ -37,4 +39,4 @@ app.post("/ask", async (req, res) => {
   }
 });
 
-app.listen(5000, "0.0.0.0", () => console.log("Server running on port 5000"));
+app.listen(3000, () => console.log("Server running"));
