@@ -1,3 +1,18 @@
+## MVP Scope Clarification
+
+This document describes the full vision architecture of BharatAI LearnOS.
+
+For the hackathon MVP, the implemented system includes:
+
+- Basic frontend interface for user queries
+- Node.js backend API
+- Integration with LLM API for explanations
+- Multilingual tutoring via prompt-based translation
+
+The PDF summarization, voice interface, caching layer, and advanced infrastructure are part of the planned architecture and future scope.
+
+The MVP focuses on proving the core concept: AI-powered personalized learning assistance for Bharat.
+
 # System Design Document
 
 ## 1. Architecture Overview
