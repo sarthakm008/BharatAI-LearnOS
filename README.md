@@ -184,7 +184,7 @@ This is a hackathon project, but contributions are welcome! Feel free to:
 
 ## Team
 
-**Author:** Sarthak  
+**Author:** Sarthak Madaan 
 **GitHub:** [@sarthakm008](https://github.com/sarthakm008)
 
 Built with ❤️ for Indian students during the AI for Bharat Hackathon
