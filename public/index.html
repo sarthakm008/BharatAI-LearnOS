@@ -1,167 +1,191 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>BharatAI LearnOS</title>
+  <title>BharatAI LearnOS</title>
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
 
-header {
-  padding: 15px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  background: #020617;
-  border-bottom: 1px solid #1e293b;
-}
+    header {
+      padding: 15px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+    }
 
-#chat {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-}
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
 
-.message {
-  max-width: 70%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 12px;
-  line-height: 1.5;
-}
+    .message {
+      max-width: 70%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
+      line-height: 1.5;
+    }
 
-.user {
-  background: #2563eb;
-  align-self: flex-end;
-  margin-left: auto;
-}
+    .user {
+      background: #2563eb;
+      align-self: flex-end;
+      margin-left: auto;
+    }
 
-.bot {
-  background: #1e293b;
-}
+    .bot {
+      background: #1e293b;
+    }
 
-#inputArea {
-  display: flex;
-  padding: 10px;
-  background: #020617;
-  border-top: 1px solid #1e293b;
-}
+    #inputArea {
+      display: flex;
+      padding: 10px;
+      background: #020617;
+      border-top: 1px solid #1e293b;
+    }
 
-textarea {
-  flex: 1;
-  resize: none;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  font-size: 14px;
-}
+    textarea {
+      flex: 1;
+      resize: none;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+    }
 
-button {
-  margin-left: 10px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: none;
-  background: #22c55e;
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
-}
+    button {
+      margin-left: 10px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background: #22c55e;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-button:hover {
-  background: #16a34a;
-}
+    button:hover {
+      background: #16a34a;
+    }
 
-.loading {
-  opacity: 0.6;
-  font-style: italic;
-}
-</style>
+    .loading {
+      opacity: 0.6;
+      font-style: italic;
+    }
+  </style>
 </head>
 
 <body>
 
-<header>🚀 BharatAI LearnOS</header>
+  <header>🚀 BharatAI LearnOS</header>
 
-<div id="chat"></div>
+  <div id="chat"></div>
 
-<div id="inputArea">
-  <textarea id="q" rows="2" placeholder="Ask anything..."></textarea>
-  <button onclick="ask()">Send</button>
-</div>
+  <div id="inputArea">
+    <textarea id="q" rows="2" placeholder="Ask anything..."></textarea>
+    <button onclick="ask()">Send</button>
+  </div>
 
-<script>
-let history = JSON.parse(localStorage.getItem("chatHistory")) || [
-  { role: "system", content: "You are a helpful AI tutor for students." }
-];
+  <script>
+    let history = JSON.parse(localStorage.getItem("chatHistory")) || [
+      {
+        role: "system",
+        content: `
+You are an expert teacher helping students learn deeply.
 
-function saveHistory() {
-  localStorage.setItem("chatHistory", JSON.stringify(history));
-}
+Rules:
+- Explain step-by-step
+- Use simple language
+- Give examples
+- Highlight key ideas
+- Avoid long paragraphs
+- Ask a short follow-up question
+- Focus on teaching, not just answering
 
-function addMessage(text, className) {
-  const chat = document.getElementById("chat");
-  const msg = document.createElement("div");
-  msg.className = "message " + className;
-  msg.innerText = text;
-  chat.appendChild(msg);
-  chat.scrollTop = chat.scrollHeight;
-}
+Always structure answers as:
 
-function loadHistory() {
-  const chat = document.getElementById("chat");
-  chat.innerHTML = "";
+Concept:
+Explanation:
+Example:
+Key takeaway:
+Question:
+`
+      }
+    ];
 
-  history.forEach(msg => {
-    if (msg.role === "user") addMessage(msg.content, "user");
-    if (msg.role === "assistant") addMessage(msg.content, "bot");
-  });
-}
+    function saveHistory() {
+      localStorage.setItem("chatHistory", JSON.stringify(history));
+    }
 
-async function ask() {
-  const qBox = document.getElementById("q");
-  const q = qBox.value.trim();
-  if (!q) return;
+    function addMessage(text, className) {
+      const chat = document.getElementById("chat");
+      const msg = document.createElement("div");
+      msg.className = "message " + className;
+      msg.innerText = text;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
 
-  addMessage(q, "user");
-  history.push({ role: "user", content: q });
-  saveHistory();
+    function loadHistory() {
+      const chat = document.getElementById("chat");
+      chat.innerHTML = "";
 
-  qBox.value = "";
+      history.forEach(msg => {
+        if (msg.role === "user") addMessage(msg.content, "user");
+        if (msg.role === "assistant") addMessage(msg.content, "bot");
+      });
+    }
 
-  const loadingMsg = document.createElement("div");
-  loadingMsg.className = "message bot loading";
-  loadingMsg.innerText = "Thinking...";
-  document.getElementById("chat").appendChild(loadingMsg);
+    async function ask() {
+      const qBox = document.getElementById("q");
+      const q = qBox.value.trim();
+      if (!q) return;
 
-  try {
-    const res = await fetch("/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ history })
-    });
+      addMessage(q, "user");
+      history.push({ role: "user", content: q });
+      saveHistory();
 
-    const data = await res.json();
+      qBox.value = "";
 
-    loadingMsg.innerText = data.answer;
-    history.push({ role: "assistant", content: data.answer });
-    saveHistory();
+      const loadingMsg = document.createElement("div");
+      loadingMsg.className = "message bot loading";
+      loadingMsg.innerText = "Thinking...";
+      document.getElementById("chat").appendChild(loadingMsg);
 
-  } catch (err) {
-    loadingMsg.innerText = "⚠️ Error talking to server";
-  }
+      try {
+        const res = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ history })
+        });
 
-  loadingMsg.classList.remove("loading");
-}
+        const data = await res.json();
 
-loadHistory();
-</script>
+        loadingMsg.innerText = data.answer;
+        history.push({ role: "assistant", content: data.answer });
+        saveHistory();
+
+      } catch (err) {
+        loadingMsg.innerText = "⚠️ Error talking to server";
+      }
+
+      loadingMsg.classList.remove("loading");
+    }
+
+    loadHistory();
+  </script>
 
 </body>
+
 </html>
