@@ -123,25 +123,33 @@
   </div>
 
   <script>
-    let mode = "tutor";
-
-    function setMode(m) {
-      mode = m;
-      alert("Mode: " + m);
-    }
-
     function getSystemPrompt() {
-      if (mode === "practice") return "You are a teacher creating practice questions.";
-      if (mode === "planner") return "Create a structured learning roadmap.";
-      if (mode === "debug") return "You are a coding mentor debugging code step by step.";
-      if (mode === "summary") return "Summarize clearly with key points.";
-      return "You are an expert tutor explaining step-by-step.";
+      return `
+You are an expert teacher helping students learn deeply.
+
+Rules:
+- Explain step-by-step
+- Use simple language
+- Give examples
+- Highlight key ideas
+- Avoid long paragraphs
+- Ask a short follow-up question
+- Focus on teaching, not just answering
+
+Always structure answers as:
+
+Concept:
+Explanation:
+Example:
+Key takeaway:
+Question:
+`;
     }
 
-    let history = [
+    // load chat safely
+    let history = JSON.parse(localStorage.getItem("chatHistory")) || [
       { role: "system", content: getSystemPrompt() }
     ];
-
 
     function saveHistory() {
       localStorage.setItem("chatHistory", JSON.stringify(history));
@@ -177,7 +185,7 @@
 
       qBox.value = "";
 
-      // 🔥 important fix
+      // keep system prompt updated
       history[0] = { role: "system", content: getSystemPrompt() };
 
       const loadingMsg = document.createElement("div");
@@ -205,7 +213,7 @@
       loadingMsg.classList.remove("loading");
     }
 
-
+    // restore chat on load
     loadHistory();
   </script>
 
