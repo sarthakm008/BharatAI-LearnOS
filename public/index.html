@@ -36,7 +36,7 @@
       margin: 10px 0;
       border-radius: 12px;
       line-height: 1.5;
-      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     .user {
@@ -93,7 +93,6 @@
       border-radius: 6px;
       display: block;
       margin-top: 8px;
-      white-space: pre-wrap;
       overflow-x: auto;
     }
   </style>
@@ -139,9 +138,17 @@ Your goal is real understanding, not short answers.
     }
 
     function formatMessage(text) {
-      // convert ```code``` blocks into <pre><code>
-      return text.replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>");
+      // escape HTML first (important)
+      text = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+      // convert code blocks
+      return text.replace(/```([\s\S]*?)```/g,
+        '<pre><code>$1</code></pre>');
     }
+
 
     function addMessage(text, className) {
       const chat = document.getElementById("chat");
