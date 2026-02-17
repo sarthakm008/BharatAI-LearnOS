@@ -197,7 +197,10 @@ Your goal is real understanding, not short answers.
 
         const data = await res.json();
 
-        loadingMsg.innerText = data.answer;
+        // 🔥 render formatted answer
+        loadingMsg.innerHTML = formatMessage(data.answer);
+        loadingMsg.style.whiteSpace = "normal";
+
         history.push({ role: "assistant", content: data.answer });
         saveHistory();
 
@@ -207,6 +210,7 @@ Your goal is real understanding, not short answers.
 
       loadingMsg.classList.remove("loading");
     }
+
 
     loadHistory();
   </script>
