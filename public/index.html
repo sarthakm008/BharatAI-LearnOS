@@ -97,9 +97,13 @@ button:hover {
 </div>
 
 <script>
-let history = [
+let history = JSON.parse(localStorage.getItem("chatHistory")) || [
   { role: "system", content: "You are a helpful AI tutor for students." }
 ];
+
+function saveHistory() {
+  localStorage.setItem("chatHistory", JSON.stringify(history));
+}
 
 function addMessage(text, className) {
   const chat = document.getElementById("chat");
@@ -108,7 +112,16 @@ function addMessage(text, className) {
   msg.innerText = text;
   chat.appendChild(msg);
   chat.scrollTop = chat.scrollHeight;
-  return msg;
+}
+
+function loadHistory() {
+  const chat = document.getElementById("chat");
+  chat.innerHTML = "";
+
+  history.forEach(msg => {
+    if (msg.role === "user") addMessage(msg.content, "user");
+    if (msg.role === "assistant") addMessage(msg.content, "bot");
+  });
 }
 
 async function ask() {
@@ -117,11 +130,15 @@ async function ask() {
   if (!q) return;
 
   addMessage(q, "user");
+  history.push({ role: "user", content: q });
+  saveHistory();
+
   qBox.value = "";
 
-  history.push({ role: "user", content: q });
-
-  const loadingMsg = addMessage("Thinking...", "bot loading");
+  const loadingMsg = document.createElement("div");
+  loadingMsg.className = "message bot loading";
+  loadingMsg.innerText = "Thinking...";
+  document.getElementById("chat").appendChild(loadingMsg);
 
   try {
     const res = await fetch("/ask", {
@@ -132,9 +149,9 @@ async function ask() {
 
     const data = await res.json();
 
-    history.push({ role: "assistant", content: data.answer });
-
     loadingMsg.innerText = data.answer;
+    history.push({ role: "assistant", content: data.answer });
+    saveHistory();
 
   } catch (err) {
     loadingMsg.innerText = "⚠️ Error talking to server";
@@ -142,6 +159,8 @@ async function ask() {
 
   loadingMsg.classList.remove("loading");
 }
+
+loadHistory();
 </script>
 
 </body>
