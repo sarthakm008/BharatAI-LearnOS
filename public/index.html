@@ -83,7 +83,6 @@
       opacity: 0.6;
       font-style: italic;
     }
-
   </style>
 </head>
 
@@ -99,8 +98,17 @@
   </div>
 
   <script>
-    function getSystemPrompt() {
-      return `
+    let mode = "tutor";
+
+    function setMode(m) {
+      mode = m;
+      alert("Mode: " + m);
+    }
+
+    let history = JSON.parse(localStorage.getItem("chatHistory")) || [
+      {
+        role: "system",
+        content: `
 You are an expert teacher helping students learn deeply.
 
 Rules:
@@ -119,12 +127,8 @@ Explanation:
 Example:
 Key takeaway:
 Question:
-`;
-    }
-
-    // load chat safely
-    let history = JSON.parse(localStorage.getItem("chatHistory")) || [
-      { role: "system", content: getSystemPrompt() }
+`
+      }
     ];
 
     function saveHistory() {
@@ -161,9 +165,6 @@ Question:
 
       qBox.value = "";
 
-      // keep system prompt updated
-      history[0] = { role: "system", content: getSystemPrompt() };
-
       const loadingMsg = document.createElement("div");
       loadingMsg.className = "message bot loading";
       loadingMsg.innerText = "Thinking...";
@@ -189,7 +190,6 @@ Question:
       loadingMsg.classList.remove("loading");
     }
 
-    // restore chat on load
     loadHistory();
   </script>
 
