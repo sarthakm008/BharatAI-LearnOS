@@ -83,6 +83,19 @@
       opacity: 0.6;
       font-style: italic;
     }
+
+    code,
+    pre {
+      background: #020617;
+      color: #22d3ee;
+      font-family: "Courier New", monospace;
+      padding: 8px;
+      border-radius: 6px;
+      display: block;
+      margin-top: 8px;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
   </style>
 </head>
 
@@ -124,12 +137,17 @@ Your goal is real understanding, not short answers.
     function saveHistory() {
       localStorage.setItem("chatHistory", JSON.stringify(history));
     }
+    
+    function formatMessage(text) {
+      // convert ```code``` blocks into <pre><code>
+      return text.replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>");
+    }
 
     function addMessage(text, className) {
       const chat = document.getElementById("chat");
       const msg = document.createElement("div");
       msg.className = "message " + className;
-      msg.innerText = text;
+      msg.innerHTML = formatMessage(text);
       chat.appendChild(msg);
       chat.scrollTop = chat.scrollHeight;
     }
