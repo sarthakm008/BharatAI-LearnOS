@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 
 app.post("/ask", async (req, res) => {
   try {
-    const { question } = req.body;
+    const { history } = req.body;
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -24,10 +24,7 @@ app.post("/ask", async (req, res) => {
       },
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: "Explain clearly for a student." },
-          { role: "user", content: question }
-        ]
+        messages: history
       })
     });
 

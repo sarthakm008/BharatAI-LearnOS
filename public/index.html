@@ -97,6 +97,10 @@ button:hover {
 </div>
 
 <script>
+let history = [
+  { role: "system", content: "You are a helpful AI tutor for students." }
+];
+
 function addMessage(text, className) {
   const chat = document.getElementById("chat");
   const msg = document.createElement("div");
@@ -115,23 +119,24 @@ async function ask() {
   addMessage(q, "user");
   qBox.value = "";
 
+  history.push({ role: "user", content: q });
+
   const loadingMsg = addMessage("Thinking...", "bot loading");
 
   try {
     const res = await fetch("/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: q })
+      body: JSON.stringify({ history })
     });
 
-    if (!res.ok) throw new Error("Server error");
-
     const data = await res.json();
+
+    history.push({ role: "assistant", content: data.answer });
 
     loadingMsg.innerText = data.answer;
 
   } catch (err) {
-    console.error(err);
     loadingMsg.innerText = "⚠️ Error talking to server";
   }
 
