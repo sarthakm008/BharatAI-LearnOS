@@ -36,11 +36,11 @@
       margin: 10px 0;
       border-radius: 12px;
       line-height: 1.5;
+      white-space: pre-wrap;
     }
 
     .user {
       background: #2563eb;
-      align-self: flex-end;
       margin-left: auto;
     }
 
@@ -98,37 +98,27 @@
   </div>
 
   <script>
-    let mode = "tutor";
+    function getSystemPrompt() {
+      return `
+You are an expert teacher helping students learn deeply.
 
-    function setMode(m) {
-      mode = m;
-      alert("Mode: " + m);
+Teach in a natural conversational style like a patient tutor.
+Do NOT use visible headings like "Concept" or "Example".
+
+Instead:
+- Explain step-by-step in flowing language
+- Include examples naturally
+- Emphasize key ideas clearly
+- Give detailed explanations
+- Avoid very short answers
+- End with a brief follow-up question
+
+Your goal is real understanding, not short answers.
+`;
     }
 
     let history = JSON.parse(localStorage.getItem("chatHistory")) || [
-      {
-        role: "system",
-        content: `
-You are an expert teacher helping students learn deeply.
-
-Rules:
-- Explain step-by-step
-- Use simple language
-- Give examples
-- Highlight key ideas
-- Avoid long paragraphs
-- Ask a short follow-up question
-- Focus on teaching, not just answering
-
-Always structure answers as:
-
-Concept:
-Explanation:
-Example:
-Key takeaway:
-Question:
-`
-      }
+      { role: "system", content: getSystemPrompt() }
     ];
 
     function saveHistory() {
@@ -164,6 +154,8 @@ Question:
       saveHistory();
 
       qBox.value = "";
+
+      history[0] = { role: "system", content: getSystemPrompt() };
 
       const loadingMsg = document.createElement("div");
       loadingMsg.className = "message bot loading";
