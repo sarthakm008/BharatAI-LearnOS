@@ -158,15 +158,9 @@ Your goal is real understanding, not short answers.
 
       history.forEach(msg => {
         if (msg.role === "user") addMessage(msg.content, "user");
-        if (msg.role === "assistant") {
-          const chat = document.getElementById("chat");
-          const div = document.createElement("div");
-          div.className = "message bot";
-          div.innerHTML = formatMessage(msg.content);
-          chat.appendChild(div);
-        }
-
+        if (msg.role === "assistant") addMessage(msg.content, "bot");
       });
+
     }
 
     async function ask() {
