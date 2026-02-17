@@ -83,12 +83,37 @@
       opacity: 0.6;
       font-style: italic;
     }
+
+    #modes {
+      padding: 10px;
+      text-align: center;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    #modes button {
+      margin: 5px;
+      padding: 6px 10px;
+      background: #1e293b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
 <body>
 
   <header>🚀 BharatAI LearnOS</header>
+
+  <div id="modes">
+    <button onclick="setMode('tutor')">Tutor</button>
+    <button onclick="setMode('practice')">Practice</button>
+    <button onclick="setMode('planner')">Planner</button>
+    <button onclick="setMode('debug')">Debug</button>
+    <button onclick="setMode('summary')">Summarize</button>
+  </div>
 
   <div id="chat"></div>
 
@@ -98,31 +123,25 @@
   </div>
 
   <script>
-    let history = JSON.parse(localStorage.getItem("chatHistory")) || [
-      {
-        role: "system",
-        content: `
-You are an expert teacher helping students learn deeply.
+    let mode = "tutor";
 
-Rules:
-- Explain step-by-step
-- Use simple language
-- Give examples
-- Highlight key ideas
-- Avoid long paragraphs
-- Ask a short follow-up question
-- Focus on teaching, not just answering
+    function setMode(m) {
+      mode = m;
+      alert("Mode: " + m);
+    }
 
-Always structure answers as:
+    function getSystemPrompt() {
+      if (mode === "practice") return "You are a teacher creating practice questions.";
+      if (mode === "planner") return "Create a structured learning roadmap.";
+      if (mode === "debug") return "You are a coding mentor debugging code step by step.";
+      if (mode === "summary") return "Summarize clearly with key points.";
+      return "You are an expert tutor explaining step-by-step.";
+    }
 
-Concept:
-Explanation:
-Example:
-Key takeaway:
-Question:
-`
-      }
+    let history = [
+      { role: "system", content: getSystemPrompt() }
     ];
+
 
     function saveHistory() {
       localStorage.setItem("chatHistory", JSON.stringify(history));
@@ -158,6 +177,9 @@ Question:
 
       qBox.value = "";
 
+      // 🔥 important fix
+      history[0] = { role: "system", content: getSystemPrompt() };
+
       const loadingMsg = document.createElement("div");
       loadingMsg.className = "message bot loading";
       loadingMsg.innerText = "Thinking...";
@@ -182,6 +204,7 @@ Question:
 
       loadingMsg.classList.remove("loading");
     }
+
 
     loadHistory();
   </script>
