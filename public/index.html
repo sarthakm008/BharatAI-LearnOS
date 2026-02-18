@@ -84,21 +84,23 @@
       font-style: italic;
     }
 
-    pre {
-      border-radius: 14px;
-      padding: 14px;
-      margin-top: 10px;
-      overflow-x: auto;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-    }
-
-    code {
-      border-radius: 14px;
-      font-family: "Fira Code", monospace;
-    }
+    /* Code block styling */
 
     .code-block {
       position: relative;
+      margin-top: 10px;
+    }
+
+    pre {
+      border-radius: 14px;
+      padding: 14px;
+      overflow-x: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      margin: 0;
+    }
+
+    code {
+      font-family: "Fira Code", monospace;
     }
 
     .copy-btn {
@@ -112,7 +114,7 @@
       padding: 4px 8px;
       font-size: 12px;
       cursor: pointer;
-      opacity: 0.85;
+      opacity: 0.9;
     }
 
     .copy-btn:hover {
@@ -165,37 +167,34 @@ Example: \`\`\`java or \`\`\`python
       localStorage.setItem("chatHistory", JSON.stringify(history));
     }
 
-    function formatMessage(text) {
-      text = text
+    function escapeHTML(text) {
+      return text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
+    }
+
+    function formatMessage(text) {
+      text = escapeHTML(text);
 
       return text.replace(/```(\w+)?\n([\s\S]*?)```/g,
         (match, lang, code) => {
           const language = lang || "javascript";
 
           return `
-        <div class="code-block">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-          <pre class="language-${language}">
-            <code class="language-${language}">${code}</code>
-          </pre>
-        </div>
-      `;
+<div class="code-block">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre class="language-${language}"><code class="language-${language}">${code.trim()}</code></pre>
+</div>`;
         });
     }
-
 
     function copyCode(btn) {
       const code = btn.nextElementSibling.innerText;
       navigator.clipboard.writeText(code);
-
       btn.innerText = "Copied!";
       setTimeout(() => btn.innerText = "Copy", 1200);
     }
-
-
 
     function addMessage(text, className) {
       const chat = document.getElementById("chat");
@@ -217,8 +216,6 @@ Example: \`\`\`java or \`\`\`python
         if (msg.role === "user") addMessage(msg.content, "user");
         if (msg.role === "assistant") addMessage(msg.content, "bot");
       });
-
-      Prism.highlightAll();
     }
 
     async function ask() {
