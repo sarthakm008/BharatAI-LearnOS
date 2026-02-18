@@ -137,6 +137,10 @@
     .copy-btn:hover {
       background: #16a34a;
     }
+
+    pre code {
+      white-space: pre;
+    }
   </style>
 
   <!-- Prism syntax highlighting -->
@@ -209,11 +213,13 @@ Focus on clarity and formatting.
           return `
 <div class="code-block">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre class="language-${language}"><code class="language-${language}">${code.trim()}</code></pre>
+<pre class="language-${language}">
+<code class="language-${language}">${code}</code>
+</pre>
 </div>`;
         });
 
-      // line breaks
+
       text = text.replace(/\n/g, "<br>");
 
       return text;
