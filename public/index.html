@@ -96,6 +96,11 @@
       overflow-x: auto;
     }
   </style>
+  <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-javascript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-python.min.js"></script>
+
 </head>
 
 <body>
@@ -138,16 +143,21 @@ Your goal is real understanding, not short answers.
     }
 
     function formatMessage(text) {
-      // escape HTML first (important)
       text = text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
 
-      // convert code blocks
-      return text.replace(/```([\s\S]*?)```/g,
-        '<pre><code>$1</code></pre>');
+      text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+        const language = lang || "javascript";
+        return `<pre><code class="language-${language}">${code}</code></pre>`;
+      });
+
+      text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      return text;
     }
+
 
 
     function addMessage(text, className) {
@@ -168,6 +178,7 @@ Your goal is real understanding, not short answers.
         if (msg.role === "assistant") addMessage(msg.content, "bot");
       });
 
+      Prism.highlightAll();
     }
 
     async function ask() {
@@ -197,8 +208,8 @@ Your goal is real understanding, not short answers.
 
         const data = await res.json();
 
-        // 🔥 render formatted answer
         loadingMsg.innerHTML = formatMessage(data.answer);
+        Prism.highlightAllUnder(loadingMsg);
         loadingMsg.style.whiteSpace = "normal";
 
         history.push({ role: "assistant", content: data.answer });
