@@ -97,6 +97,27 @@
       font-family: "Fira Code", monospace;
     }
 
+    .code-block {
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #22c55e;
+      color: black;
+      border: none;
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      opacity: 0.85;
+    }
+
+    .copy-btn:hover {
+      background: #16a34a;
+    }
   </style>
 
   <!-- Prism syntax highlighting -->
@@ -150,19 +171,25 @@ Example: \`\`\`java or \`\`\`python
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
 
-      // code blocks with language
-      text = text.replace(/```(\w+)?\n([\s\S]*?)```/g,
-        (match, lang, code) => {
-          const language = lang || "javascript";
-          return `<pre><code class="language-${language}">${code}</code></pre>`;
-        });
-
-      // inline code
-      text = text.replace(/`([^`]+)`/g,
-        '<code class="language-none">$1</code>');
-
-      return text;
+      return text.replace(/```([\s\S]*?)```/g, (match, code) => {
+        const escaped = code.replace(/"/g, "&quot;");
+        return `
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <pre><code>${escaped}</code></pre>
+      </div>
+    `;
+      });
     }
+
+    function copyCode(btn) {
+      const code = btn.nextElementSibling.innerText;
+      navigator.clipboard.writeText(code);
+
+      btn.innerText = "Copied!";
+      setTimeout(() => btn.innerText = "Copy", 1200);
+    }
+
 
     function addMessage(text, className) {
       const chat = document.getElementById("chat");
