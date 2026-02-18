@@ -35,7 +35,7 @@
       padding: 12px;
       margin: 10px 0;
       border-radius: 12px;
-      line-height: 1.5;
+      line-height: 1.6;
       word-break: break-word;
     }
 
@@ -82,6 +82,23 @@
     .loading {
       opacity: 0.6;
       font-style: italic;
+    }
+
+    /* headings & lists */
+
+    h3 {
+      margin-top: 14px;
+      margin-bottom: 6px;
+      color: #38bdf8;
+    }
+
+    ul {
+      margin-left: 20px;
+      margin-top: 6px;
+    }
+
+    li {
+      margin: 4px 0;
     }
 
     /* Code block styling */
@@ -145,17 +162,18 @@
   <script>
     function getSystemPrompt() {
       return `
-You are an expert teacher helping students learn deeply.
+You are an AI tutor that formats answers for a chat learning interface.
 
-Teach naturally like a patient tutor.
-Do NOT use visible headings.
+Rules:
+- Use Markdown-style structure
+- Use ## headings
+- Use bullet lists with -
+- Keep paragraphs short
+- Avoid giant walls of text
+- Organize broad answers into sections
+- If showing code, always specify language after backticks
 
-Explain step-by-step, include examples,
-give detailed understanding,
-and end with a short follow-up question.
-
-If showing code, always specify language after backticks.
-Example: \`\`\`java or \`\`\`python
+Focus on clarity and formatting.
 `;
     }
 
@@ -177,16 +195,28 @@ Example: \`\`\`java or \`\`\`python
     function formatMessage(text) {
       text = escapeHTML(text);
 
-      return text.replace(/```(\w+)?\n([\s\S]*?)```/g,
+      // headings
+      text = text.replace(/^## (.*)$/gm, '<h3>$1</h3>');
+
+      // bullet lists
+      text = text.replace(/^- (.*)$/gm, '<li>$1</li>');
+      text = text.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+
+      // code blocks
+      text = text.replace(/```(\w+)?\n([\s\S]*?)```/g,
         (match, lang, code) => {
           const language = lang || "javascript";
-
           return `
 <div class="code-block">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 <pre class="language-${language}"><code class="language-${language}">${code.trim()}</code></pre>
 </div>`;
         });
+
+      // line breaks
+      text = text.replace(/\n/g, "<br>");
+
+      return text;
     }
 
     function copyCode(btn) {
@@ -204,7 +234,6 @@ Example: \`\`\`java or \`\`\`python
       chat.appendChild(msg);
 
       Prism.highlightAllUnder(msg);
-
       chat.scrollTop = chat.scrollHeight;
     }
 
@@ -228,7 +257,6 @@ Example: \`\`\`java or \`\`\`python
       saveHistory();
 
       qBox.value = "";
-
       history[0] = { role: "system", content: getSystemPrompt() };
 
       const loadingMsg = document.createElement("div");
