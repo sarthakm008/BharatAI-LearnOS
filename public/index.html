@@ -171,16 +171,21 @@ Example: \`\`\`java or \`\`\`python
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
 
-      return text.replace(/```([\s\S]*?)```/g, (match, code) => {
-        const escaped = code.replace(/"/g, "&quot;");
-        return `
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-        <pre><code>${escaped}</code></pre>
-      </div>
-    `;
-      });
+      return text.replace(/```(\w+)?\n([\s\S]*?)```/g,
+        (match, lang, code) => {
+          const language = lang || "javascript";
+
+          return `
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          <pre class="language-${language}">
+            <code class="language-${language}">${code}</code>
+          </pre>
+        </div>
+      `;
+        });
     }
+
 
     function copyCode(btn) {
       const code = btn.nextElementSibling.innerText;
@@ -189,6 +194,7 @@ Example: \`\`\`java or \`\`\`python
       btn.innerText = "Copied!";
       setTimeout(() => btn.innerText = "Copy", 1200);
     }
+
 
 
     function addMessage(text, className) {
