@@ -83,23 +83,14 @@
       opacity: 0.6;
       font-style: italic;
     }
-
-    code,
-    pre {
-      background: #020617;
-      color: #22d3ee;
-      font-family: "Courier New", monospace;
-      padding: 8px;
-      border-radius: 6px;
-      display: block;
-      margin-top: 8px;
-      overflow-x: auto;
-    }
   </style>
+
+  <!-- Prism syntax highlighting -->
   <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-javascript.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-java.min.js"></script>
 
 </head>
 
@@ -119,18 +110,15 @@
       return `
 You are an expert teacher helping students learn deeply.
 
-Teach in a natural conversational style like a patient tutor.
-Do NOT use visible headings like "Concept" or "Example".
+Teach naturally like a patient tutor.
+Do NOT use visible headings.
 
-Instead:
-- Explain step-by-step in flowing language
-- Include examples naturally
-- Emphasize key ideas clearly
-- Give detailed explanations
-- Avoid very short answers
-- End with a brief follow-up question
+Explain step-by-step, include examples,
+give detailed understanding,
+and end with a short follow-up question.
 
-Your goal is real understanding, not short answers.
+If showing code, always specify language after backticks.
+Example: \`\`\`java or \`\`\`python
 `;
     }
 
@@ -148,17 +136,19 @@ Your goal is real understanding, not short answers.
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;");
 
-      text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-        const language = lang || "javascript";
-        return `<pre><code class="language-${language}">${code}</code></pre>`;
-      });
+      // code blocks with language
+      text = text.replace(/```(\w+)?\n([\s\S]*?)```/g,
+        (match, lang, code) => {
+          const language = lang || "javascript";
+          return `<pre><code class="language-${language}">${code}</code></pre>`;
+        });
 
-      text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+      // inline code
+      text = text.replace(/`([^`]+)`/g,
+        '<code class="language-none">$1</code>');
 
       return text;
     }
-
-
 
     function addMessage(text, className) {
       const chat = document.getElementById("chat");
@@ -166,6 +156,9 @@ Your goal is real understanding, not short answers.
       msg.className = "message " + className;
       msg.innerHTML = formatMessage(text);
       chat.appendChild(msg);
+
+      Prism.highlightAllUnder(msg);
+
       chat.scrollTop = chat.scrollHeight;
     }
 
@@ -209,8 +202,9 @@ Your goal is real understanding, not short answers.
         const data = await res.json();
 
         loadingMsg.innerHTML = formatMessage(data.answer);
+        loadingMsg.classList.remove("loading");
+
         Prism.highlightAllUnder(loadingMsg);
-        loadingMsg.style.whiteSpace = "normal";
 
         history.push({ role: "assistant", content: data.answer });
         saveHistory();
@@ -218,10 +212,7 @@ Your goal is real understanding, not short answers.
       } catch (err) {
         loadingMsg.innerText = "⚠️ Error talking to server";
       }
-
-      loadingMsg.classList.remove("loading");
     }
-
 
     loadHistory();
   </script>
