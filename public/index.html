@@ -141,6 +141,11 @@
     pre code {
       white-space: pre;
     }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
   </style>
 
   <!-- Prism syntax highlighting -->
@@ -177,6 +182,11 @@ Rules:
 - Organize broad answers into sections
 - If showing code, always specify language after backticks
 
+When showing code:
+- Always preserve indentation
+- Always use proper line breaks
+- Never compress code into a single line
+
 Focus on clarity and formatting.
 `;
     }
@@ -207,17 +217,16 @@ Focus on clarity and formatting.
       text = text.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
 
       // code blocks
-      text = text.replace(/```(\w+)?\n([\s\S]*?)```/g,
+      text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g,
         (match, lang, code) => {
           const language = lang || "javascript";
           return `
 <div class="code-block">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre class="language-${language}">
-<code class="language-${language}">${code}</code>
-</pre>
+<pre class="language-${language}"><code class="language-${language}">${code}</code></pre>
 </div>`;
         });
+
 
 
       text = text.replace(/\n/g, "<br>");
