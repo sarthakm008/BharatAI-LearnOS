@@ -144,6 +144,15 @@
       white-space: pre-wrap;
       word-break: break-word;
     }
+
+    ul {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 4px 0;
+    }
   </style>
 
   <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css" rel="stylesheet" />
@@ -252,14 +261,18 @@ Prefer clarity over completeness.
 
       text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
 
-      text = text.replace(/(?:^- .*(?:\n|$))+?/gm, block => {
+      text = text.replace(/(?:^[\-\+\*] .*(?:\n|$))+?/gm, block => {
         const items = block
           .trim()
           .split("\n")
-          .map(line => `<li>${line.replace(/^- /, "")}</li>`)
+          .map(line =>
+            `<li>${line.replace(/^[\-\+\*] /, "")}</li>`
+          )
           .join("");
+
         return `<ul>${items}</ul>`;
       });
+
       text = text.replace(/\n/g, "<br>");
 
       codeBlocks.forEach((block, i) => {
