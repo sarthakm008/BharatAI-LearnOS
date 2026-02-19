@@ -14,29 +14,33 @@ app.get("/", (req, res) => {
 
 app.post("/ask", async (req, res) => {
   try {
-    const { history } = req.body;
+    const history = req.body.history;
 
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: history
-      })
+    if (!history || !Array.isArray(history)) {
+      return res.status(400).json({
+        answer: "Invalid request format."
+      });
+    }
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: history
     });
 
-    const data = await response.json();
+    const answer =
+      completion.choices?.[0]?.message?.content ||
+      "No response generated.";
 
-    res.json({ answer: data.choices[0].message.content });
+    res.json({ answer });
 
   } catch (err) {
     console.error(err);
-    res.json({ answer: "Error: " + err.message });
+    res.status(500).json({
+      answer: "Server error while generating response."
+    });
   }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server running on port", PORT));
