@@ -84,7 +84,6 @@
       font-style: italic;
     }
 
-    /* headings & lists */
 
     h3 {
       margin-top: 14px;
@@ -101,7 +100,6 @@
       margin: 4px 0;
     }
 
-    /* Code block styling */
 
     .code-block {
       position: relative;
@@ -148,7 +146,6 @@
     }
   </style>
 
-  <!-- Prism syntax highlighting -->
   <link href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-javascript.min.js"></script>
@@ -209,7 +206,6 @@ Focus on clarity and formatting.
     function formatMessage(text) {
       text = escapeHTML(text);
 
-      // --- CODE BLOCKS FIRST (protect them) ---
       const codeBlocks = [];
       text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (match, lang, code) => {
         const language = lang || "javascript";
@@ -226,10 +222,8 @@ Focus on clarity and formatting.
         return token;
       });
 
-      // --- HEADINGS ---
       text = text.replace(/^## (.*)$/gm, '<h3>$1</h3>');
 
-      // --- BULLET LISTS (safe version) ---
       text = text.replace(/(?:^- .*(?:\n|$))+?/gm, block => {
         const items = block
           .trim()
@@ -238,11 +232,8 @@ Focus on clarity and formatting.
           .join("");
         return `<ul>${items}</ul>`;
       });
-
-      // --- LINE BREAKS ---
       text = text.replace(/\n/g, "<br>");
 
-      // --- RESTORE CODE BLOCKS ---
       codeBlocks.forEach((block, i) => {
         text = text.replace(`__CODEBLOCK_${i}__`, block);
       });
