@@ -16,10 +16,14 @@ app.post("/ask", async (req, res) => {
     const { history } = req.body;
 
     if (!history || !Array.isArray(history)) {
-      return res.json({
-        answer: "Invalid chat history."
-      });
+      return res.json({ answer: "Invalid chat history." });
     }
+
+    // ✅ LIMIT CONTEXT SIZE
+    const trimmedHistory = [
+      history[0],
+      ...history.slice(-10)
+    ];
 
     const response = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
@@ -31,19 +35,13 @@ app.post("/ask", async (req, res) => {
         },
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
-          messages: history,
+          messages: trimmedHistory,
           temperature: 0.7
         })
       }
     );
 
     const data = await response.json();
-    if (!response.ok) {
-      console.error("Groq API error:", data);
-    }
-
-
-    console.log("Groq response:", data);
 
     const answer =
       data?.choices?.[0]?.message?.content ??
@@ -52,13 +50,13 @@ app.post("/ask", async (req, res) => {
     res.json({ answer });
 
   } catch (err) {
-    console.error("Server error:", err);
-
+    console.error(err);
     res.json({
       answer: "Server error while generating response."
     });
   }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
